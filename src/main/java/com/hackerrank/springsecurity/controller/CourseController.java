@@ -19,7 +19,7 @@ public class CourseController {
 
     @RequestMapping(value = "/course", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     @Secured("ROLE_OFFICE_ADMIN")
-    public ResponseEntity<ApiResponse> addCourse(@RequestBody Course course, Authentication auth) {
+    public ResponseEntity<ApiResponse> addCourse(@RequestBody Course course, Authentication authentication) {
       if (!authentication.getAuthorities()
       .stream()
       .anyMatch(auth -> auth.getAuthority().equals("ROLE_OFFICE_ADMIN"))) {
