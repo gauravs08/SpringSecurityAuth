@@ -18,7 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class CourseController {
 
     @RequestMapping(value = "/course", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ApiResponse> addCourse(@RequestBody Course course) {
+    @Secured("ROLE_OFFICE_ADMIN")
+    public ResponseEntity<ApiResponse> addCourse(@RequestBody Course course, Authentication auth) {
+      if (!authentication.getAuthorities()
+      .stream()
+      .anyMatch(auth -> auth.getAuthority().equals("ROLE_OFFICE_ADMIN"))) {
+        ApiResponse response = new ApiResponse(403, "Authorization Failure - This user does not have the sufficient level of access");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         return new ResponseEntity(new ApiResponse(200, "Added"), HttpStatus.OK);
     }
 
@@ -28,15 +34,7 @@ public class CourseController {
     }
 
     @RequestMapping(value = "/course", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    @Secured("ROLE_OFFICE_ADMIN")
-    public ResponseEntity<ApiResponse> getCourses(Authentication authentication) {
-      if (!authentication.getAuthorities()
-      .stream()
-      .anyMatch(auth -> auth.getAuthority().equals("ROLE_OFFICE_ADMIN"))) {
-        ApiResponse response = new ApiResponse(403, "Authorization Failure - This user does not have the sufficient level of access");
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-     } else{
+    public ResponseEntity<ApiResponse> getCourses() {
         return new ResponseEntity(new ApiResponse(200, "Courses"), HttpStatus.OK); 
-      }
     }
 }
